@@ -36,10 +36,23 @@ int main(int argc, char* argv[]){
     myBedLegLine->addItem(new FlowerPattern(new ClassicLeg(2), 5));  
     myBedLegLine->addItem(new TraditionalPattern(new ClassicLeg(2), 10));  
     myBedLegLine->addItem(new StarPattern(new ClassicLeg(2), 15));    
-    myBedLegLine->manufacture();
-    std::cout << myBedLegLine->manufacturingTime() << std::endl;
+    myBedLegLine->addItem(new TraditionalPattern(new FlowerPattern(new StarPattern(new ClassicLeg(2), 15), 5), 10));    
 
+    //myBedLegLine->manufacture();
 
+    //std::cout << myBedLegLine->manufacturingTime() << std::endl;
+
+//// facade /////
+    BedLineProcess* myBedLineProcess = new BedLineProcess();
+
+    if(myBedLineProcess->run("Leg", myBedLegLine))
+        std::cout << myBedLegLine->manufacturingTime() << std::endl;
+
+    if(myBedLineProcess->run("Frame", myBedFrameLine))
+        std::cout << myBedFrameLine->manufacturingTime() << std::endl;
+
+    if(myBedLineProcess->run("Mat", myBedMatLine))
+        std::cout << myBedMatLine->manufacturingTime() << std::endl;
 
 	return 0;
 }
