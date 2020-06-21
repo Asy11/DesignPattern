@@ -34,9 +34,9 @@ int main(int argc, char* argv[]){
 
 //// Decorator ////
     myBedLegLine->addItem(new FlowerPattern(new ClassicLeg(2), 5));  
-    myBedLegLine->addItem(new TraditionalPattern(new ClassicLeg(2), 10));  
-    myBedLegLine->addItem(new StarPattern(new ClassicLeg(2), 15));    
-    myBedLegLine->addItem(new TraditionalPattern(new FlowerPattern(new StarPattern(new ClassicLeg(2), 15), 5), 10));    
+    //myBedLegLine->addItem(new TraditionalPattern(new ClassicLeg(2), 10));  
+    //myBedLegLine->addItem(new StarPattern(new ClassicLeg(2), 15));    
+    //myBedLegLine->addItem(new TraditionalPattern(new FlowerPattern(new StarPattern(new ClassicLeg(2), 15), 5), 10));    
 
     //myBedLegLine->manufacture();
 

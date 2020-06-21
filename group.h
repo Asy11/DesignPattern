@@ -289,9 +289,16 @@ public:
     }
 };
 
-/////// facade pattern ////////
+////////// proxy pattern ///////////
+class Electric{
 
-class ElectricCenter{
+public:
+    virtual bool getElectric() = 0;
+    virtual void setElectric(bool e) = 0;
+};
+
+/////// facade pattern ////////
+class ElectricCenter : public Electric{
     bool electric;
 public:
     ElectricCenter() { electric = false; }
@@ -305,6 +312,34 @@ public:
     }
 };
 
+class ElectricProxy : public Electric{
+    ElectricCenter* ec;
+    int referenceCount;
+public:
+    ElectricProxy(){ ec = new ElectricCenter(); referenceCount = 0; }
+
+    int checkElectricUseCount(){
+        return referenceCount;
+    }
+
+    bool getElectric(){
+        if( checkElectricUseCount() <= 100 ){
+            referenceCount++;
+            std::cout<< "전기 사용량 : " << referenceCount  << std::endl;
+            return ec->getElectric();
+        }
+        else{
+            std::cout<< "전기 사용량 초과" << std::endl;
+            return false;
+        }   
+    }
+
+    void setElectric(bool e){
+        ec->setElectric(e);
+    }
+
+};
+
 class ResourcePreprocess{
     int wood;
     int moltenPlastic;
@@ -313,8 +348,8 @@ class ResourcePreprocess{
 public:
     ResourcePreprocess() { wood = 0; moltenPlastic = 0 ; moltenSteel = 0; clothes = 0; }
 
-    void Preprocess( ElectricCenter e, const char* c ){
-        if( e.getElectric() ){
+    void Preprocess( ElectricProxy* p, const char* c ){
+        if( p->getElectric() ){
             if( !strcmp(c, "wood") ){
                 wood += 1;
             }
@@ -376,8 +411,8 @@ public:
 
 class BedLegLine : public BedComponentLine{
 public:
-    void manufacture(ElectricCenter e, ResourcePreprocess r){
-        if( e.getElectric() && r.getMoltenPlastic() ){
+    void manufacture(ElectricProxy* p, ResourcePreprocess r){
+        if( p->getElectric() && r.getMoltenPlastic() ){
             BedComponentLine::manufacture();
         }
     }
@@ -385,8 +420,8 @@ public:
 
 class BedFrameLine : public BedComponentLine{
 public:
-    void manufacture(ElectricCenter e, ResourcePreprocess r){
-        if( e.getElectric() && r.getWood() && r.getMoltenPlastic() && r.getMoltenSteel() ){
+    void manufacture(ElectricProxy* p, ResourcePreprocess r){
+        if( p->getElectric() && r.getWood() && r.getMoltenPlastic() && r.getMoltenSteel() ){
             BedComponentLine::manufacture();
         }
     }
@@ -394,8 +429,8 @@ public:
 
 class BedMatLine : public BedComponentLine{
 public:
-    void manufacture(ElectricCenter e, ResourcePreprocess r){
-        if( e.getElectric() && r.getClothes() && r.getMoltenSteel() ){
+    void manufacture(ElectricProxy* p, ResourcePreprocess r){
+        if( p->getElectric() && r.getClothes() && r.getMoltenSteel() ){
             BedComponentLine::manufacture();
         }
     }
@@ -404,9 +439,9 @@ public:
 class BedLineProcess{
     bool runningstatus;
     ResourcePreprocess r;
-    ElectricCenter e;
+    ElectricProxy* proxy;
 public:
-    BedLineProcess() { runningstatus = false; }
+    BedLineProcess() { proxy = new ElectricProxy(); runningstatus = false; }
 
     bool stop(){
         runningstatus = false;
@@ -414,37 +449,37 @@ public:
     }
 
     bool run( const char* c, BedComponentLine* b ){
-        e.setElectric(true);
+        proxy->setElectric(true);
 
         if( !strcmp(c, "Leg") ){
             BedLegLine* bll = dynamic_cast<BedLegLine*>(b);
 
             for(size_t i = 0 ; i < bll->sizeOfBedComponentLine() ; i++){
-                r.Preprocess( e, "moltenPlastic" );
+                r.Preprocess( proxy, "moltenPlastic" );
             }
 
-            bll->manufacture( e, r );
+            bll->manufacture( proxy, r );
         }        
         else if( !strcmp(c, "Frame") ){
             BedFrameLine* bfl = dynamic_cast<BedFrameLine*>(b);
 
             for(size_t i = 0 ; i < bfl->sizeOfBedComponentLine() ; i++){
-                r.Preprocess( e, "wood" );
-                r.Preprocess( e, "moltenPlastic" );
-                r.Preprocess( e, "moltenSteel" );
+                r.Preprocess( proxy, "wood" );
+                r.Preprocess( proxy, "moltenPlastic" );
+                r.Preprocess( proxy, "moltenSteel" );
             }
 
-            bfl->manufacture( e, r );
+            bfl->manufacture( proxy, r );
         }
         else if( !strcmp(c, "Mat") ){
             BedMatLine* bml = dynamic_cast<BedMatLine*>(b);
 
             for(size_t i = 0 ; i < bml->sizeOfBedComponentLine() ; i++){
-                r.Preprocess( e, "clothes" );
-                r.Preprocess( e, "moltenSteel" );
+                r.Preprocess( proxy, "clothes" );
+                r.Preprocess( proxy, "moltenSteel" );
             }
 
-            bml->manufacture( e, r );
+            bml->manufacture( proxy, r );
         }
         else{
             std::cout<< "올바른 생산 라인 이름을 입력하세요" << std::endl;

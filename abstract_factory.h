@@ -11,27 +11,27 @@ struct Plastic{
 	virtual void Create() = 0;
 };
 
-struct CircuitA : public Circuit{
+struct Circuit_LG : public Circuit{
 	void Create(){
-		cout << "Create CircuitA" << endl;
+		cout << "Create Circuit_LG" << endl;
 	}	
 };
 
-struct CircuitB : public Circuit{
+struct Circuit_SS : public Circuit{
 	void Create(){
-		cout << "Create CircuitB" << endl;
+		cout << "Create Circuit_SS" << endl;
 	}	
 };
 
-struct PlasticA : public Plastic{
+struct Plastic_LG : public Plastic{
 	void Create(){
-		cout << "Create PlasticA" << endl;
+		cout << "Create Plastic_LG" << endl;
 	}
 };
 
-struct PlasticB : public Plastic{
+struct Plastic_SS : public Plastic{
 	void Create(){
-		cout << "Create PlasticB" << endl;
+		cout << "Create Plastic_SS" << endl;
 	}
 };
 
@@ -40,20 +40,20 @@ struct ChargerFac{
 	virtual Plastic* CreatePlastic() = 0;
 };
 
-struct ChargerFacA : public ChargerFac{
+struct ChargerFac_LG : public ChargerFac{
 	Circuit* CreateCircuit(){
-		return new(CircuitA); 
+		return new(Circuit_LG); 
 	}
 	Plastic* CreatePlastic(){
-		return new(PlasticA);
+		return new(Plastic_LG);
 	}
 };
 
-struct ChargerFacB : public ChargerFac{
+struct ChargerFac_SS : public ChargerFac{
 	Circuit* CreateCircuit(){
-		return new(CircuitB); 
+		return new(Circuit_SS); 
 	}
 	Plastic* CreatePlastic(){
-		return new(PlasticB);
+		return new(Plastic_SS);
 	}
 };
