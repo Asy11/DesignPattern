@@ -73,6 +73,8 @@ public:
 
 class Bed_Simons : public Bed{
 public:
+    Bed_Simons() { LegSideAngle = 0; BodySideAngle = 0; }
+
 	Leg* createLeg(){
 		return new Leg_Simons(); 
 	}
@@ -82,6 +84,34 @@ public:
     Mat* createMat(){
 		return new Mat_Simons();
 	}
+
+    bool moveLegUp(int angle){
+        if( 0 <= LegSideAngle &&  LegSideAngle <= 30 )
+            LegSideAngle += angle;
+        std::cout << "current leg angel is " << LegSideAngle << std::endl;
+    }
+
+    bool moveLegDown(int angle){
+        if( 15 <= LegSideAngle &&  LegSideAngle <= 45 )
+            LegSideAngle -= angle;
+        std::cout << "current leg angel is " << LegSideAngle << std::endl;
+    }
+
+    bool moveBodyUp(int angle){
+        if( 0 <= BodySideAngle &&  BodySideAngle <= 30 )
+            BodySideAngle += angle;
+        std::cout << "current body angel is " << LegSideAngle << std::endl;
+    }
+
+    bool moveBodyDown(int angle){
+        if( 15 <= BodySideAngle &&  BodySideAngle <= 45 )
+            BodySideAngle += angle;
+        std::cout << "current body angel is " << LegSideAngle << std::endl;
+    }
+
+private:
+    int LegSideAngle;
+    int BodySideAngle;
 };
 
 class Bed_Ace : public Bed{
