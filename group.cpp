@@ -1,4 +1,5 @@
 #include "interpreter.h"
+#include "mediator.h"
 
 AbstractExpression* buildInterpreterTree(){
     AbstractExpression* b = new TerminalExpression("bed");
@@ -96,7 +97,14 @@ int main(int argc, char* argv[]){
     mybed->moveBodyUp(15);
     std::cout << context3 << " -> "<< myInterpreterTree->evaluate(context3) << std::endl;
 
+//// mediator ////
+    ControlPanel* cp = new ControlPanel();
 
+    cp->createWidget();
+    cp->showMenu();
+
+    cp->pMusic();
+    cp->onProjector();
 
 	return 0;
 }
