@@ -1,5 +1,6 @@
 #include "interpreter.h"
 #include "mediator.h"
+#include "observer.h"
 
 AbstractExpression* buildInterpreterTree(){
     AbstractExpression* b = new TerminalExpression("bed");
@@ -105,6 +106,17 @@ int main(int argc, char* argv[]){
 
     cp->pMusic();
     cp->onProjector();
+
+
+//// observer ////
+    TemperatureSubject* ts = new TemperatureSubject();
+    TemperatureObserver* to = new TemperatureObserver(ts);
+
+    for(size_t i = 0 ; i < 20 ; i++)
+    {
+        ts->setTemperture(ts->getTemperture()+0.5);
+        ts->notify();
+    }
 
 	return 0;
 }
