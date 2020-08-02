@@ -2,6 +2,8 @@
 #include <string.h>
 #include <vector>
 #include <cstring>
+#include <typeinfo>
+#include "strategy.h"
 
 ///////// Abstract Fac ////////
 class Leg{
@@ -66,15 +68,46 @@ public:
 
 class Bed{
 public:
+    Bed() {LegSideAngle = 0; BodySideAngle = 0;}
+
 	virtual Leg* createLeg() = 0;
 	virtual Frame* createFrame() = 0;
 	virtual Mat* createMat() = 0;
+
+    void movement(int angle, VOICE_REC vr){
+        if(vr == BODY_UP){
+            changeMovementStrtegy(new BodySideUP);
+            movementStrategy->changeAngel(angle, BodySideAngle);
+        }
+        else if (vr == BODY_DOWN){
+            changeMovementStrtegy(new BodySideDown);
+            movementStrategy->changeAngel(angle, BodySideAngle);            
+        }
+        else if (vr == LEG_UP){
+            changeMovementStrtegy(new LegSideUP);
+            movementStrategy->changeAngel(angle, LegSideAngle);            
+        }
+        else if (vr == LEG_DOWN){
+            changeMovementStrtegy(new LegSideDown);
+            movementStrategy->changeAngel(angle, LegSideAngle);
+        }
+    }
+    
+    virtual void changeMovementStrtegy(Strategy* _movementStrategy){
+        if(movementStrategy != NULL)
+            delete movementStrategy;
+
+        movementStrategy = _movementStrategy;
+    }
+
+private:
+    Strategy* movementStrategy;
+    int LegSideAngle;
+    int BodySideAngle;
 };
 
 class Bed_Simons : public Bed{
 public:
-    Bed_Simons() { LegSideAngle = 0; BodySideAngle = 0; }
-
 	Leg* createLeg(){
 		return new Leg_Simons(); 
 	}
@@ -84,34 +117,6 @@ public:
     Mat* createMat(){
 		return new Mat_Simons();
 	}
-
-    bool moveLegUp(int angle){
-        if( 0 <= LegSideAngle &&  LegSideAngle <= 30 )
-            LegSideAngle += angle;
-        std::cout << "current leg angel is " << LegSideAngle << std::endl;
-    }
-
-    bool moveLegDown(int angle){
-        if( 15 <= LegSideAngle &&  LegSideAngle <= 45 )
-            LegSideAngle -= angle;
-        std::cout << "current leg angel is " << LegSideAngle << std::endl;
-    }
-
-    bool moveBodyUp(int angle){
-        if( 0 <= BodySideAngle &&  BodySideAngle <= 30 )
-            BodySideAngle += angle;
-        std::cout << "current body angel is " << LegSideAngle << std::endl;
-    }
-
-    bool moveBodyDown(int angle){
-        if( 15 <= BodySideAngle &&  BodySideAngle <= 45 )
-            BodySideAngle += angle;
-        std::cout << "current body angel is " << LegSideAngle << std::endl;
-    }
-
-private:
-    int LegSideAngle;
-    int BodySideAngle;
 };
 
 class Bed_Ace : public Bed{

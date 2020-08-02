@@ -2,7 +2,7 @@
 #include "mediator.h"
 #include "observer.h"
 
-AbstractExpression* buildInterpreterTree(){
+AbstractExpression* InterpreterTree(){
     AbstractExpression* b = new TerminalExpression("bed");
 
     AbstractExpression* lu = new TerminalExpression("leg up");
@@ -22,6 +22,68 @@ AbstractExpression* buildInterpreterTree(){
 
     // legside or bodyside
     return new AndExpression(b, move);
+}
+
+AbstractExpression* legUpInterpreter(){
+    AbstractExpression* b = new TerminalExpression("bed");
+    AbstractExpression* lu = new TerminalExpression("leg up");
+
+    return new AndExpression(b, lu);
+}
+
+AbstractExpression* legDownInterpreter(){
+    AbstractExpression* b = new TerminalExpression("bed");
+    AbstractExpression* ld = new TerminalExpression("leg down");
+
+    return new AndExpression(b, ld);
+}
+
+AbstractExpression* bodyUpInterpreter(){
+    AbstractExpression* b = new TerminalExpression("bed");
+    AbstractExpression* bu = new TerminalExpression("body up");
+
+    return new AndExpression(b, bu);
+}
+
+AbstractExpression* bodyDownInterpreter(){
+    AbstractExpression* b = new TerminalExpression("bed");
+    AbstractExpression* bd = new TerminalExpression("body down");
+
+    return new AndExpression(b, bd);
+}
+
+AbstractExpression* lu = legUpInterpreter();
+AbstractExpression* ld = legDownInterpreter();
+AbstractExpression* bu = bodyUpInterpreter();
+AbstractExpression* bd = bodyDownInterpreter();
+
+void voiceRecognition(std::string s, Bed* mybed){
+    bool legUp, legDown, bodyUp, bodyDown;
+
+    legUp    = lu->evaluate(s);
+    legDown  = ld->evaluate(s);
+    bodyUp   = bu->evaluate(s);
+    bodyDown = bd->evaluate(s);
+
+    if(legUp){
+        std::cout << s << " -> "<< legUp << std::endl;
+        mybed->movement(15, LEG_UP);
+    }
+    else if(legDown){
+        std::cout << s << " -> "<< legDown << std::endl;  
+        mybed->movement(15, LEG_DOWN);      
+    }
+    else if(bodyUp){
+        std::cout << s << " -> "<< bodyUp << std::endl; 
+        mybed->movement(15, BODY_UP);      
+    }
+    else if(bodyDown){
+        std::cout << s << " -> "<< bodyDown << std::endl;  
+        mybed->movement(15, BODY_DOWN);      
+    }
+    else{
+        std::cout << s << " -> " << "Wrong msg" << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]){
@@ -83,22 +145,15 @@ int main(int argc, char* argv[]){
         std::cout << myBedMatLine->manufacturingTime() << std::endl;
 */
 
-//// interpreter ////
+//// interpreter with strategy ////
     Bed_Simons* mybed = new Bed_Simons();
 
-    std::string context1("bed, I want my leg up");
-    std::string context2("body down please my bed");
-    std::string context3("body down please");
-
-    AbstractExpression* myInterpreterTree = buildInterpreterTree();
-
-    std::cout << context1 << " -> "<< myInterpreterTree->evaluate(context1) << std::endl;
-    mybed->moveLegUp(15);
-    std::cout << context2 << " -> "<< myInterpreterTree->evaluate(context2) << std::endl;
-    mybed->moveBodyUp(15);
-    std::cout << context3 << " -> "<< myInterpreterTree->evaluate(context3) << std::endl;
+    voiceRecognition("bed, I want my leg up", mybed);
+    voiceRecognition("leg down please my bed", mybed);
+    voiceRecognition("body down please", mybed);
 
 //// mediator ////
+/*
     ControlPanel* cp = new ControlPanel();
 
     cp->createWidget();
@@ -106,9 +161,10 @@ int main(int argc, char* argv[]){
 
     cp->pMusic();
     cp->onProjector();
-
+*/
 
 //// observer ////
+/*
     TemperatureSubject* ts = new TemperatureSubject();
     TemperatureObserver* to = new TemperatureObserver(ts);
 
@@ -117,6 +173,6 @@ int main(int argc, char* argv[]){
         ts->setTemperture(ts->getTemperture()+0.5);
         ts->notify();
     }
-
+*/
 	return 0;
 }
